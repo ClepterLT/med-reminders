@@ -1,0 +1,31 @@
+services:
+  medreminders_nginx:
+    container_name: medreminders_nginx
+    build: ./nginx
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - web
+    volumes:
+      - ../ssl:/etc/nginx/ssl
+  medreminders_node:
+    container_name: medreminders_node
+    build:
+      context: ../
+      dockerfile: ./docker_medreminders/node/Dockerfile
+    user: "node"
+    networks:
+      - web
+    volumes:
+      - ../src/frontend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - medreminders_nginx
+
+networks:
+  web:
+    external: true
